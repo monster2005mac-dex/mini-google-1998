@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mini Google 1998</title>
+<style>
+  :root { --ink:#0b2a3a; --sea:#0e7c86; --deep:#08485a; --foam:#eaf7f5; --coral:#ff6b4a; --sun:#ffc233; --old:#5b6670; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:"Trebuchet MS",Verdana,sans-serif; color:var(--ink); background:var(--foam); }
+
+  /* ---------- hero ---------- */
+  .hero { background:linear-gradient(170deg,var(--ink),var(--deep) 60%,var(--sea)); color:#fff; text-align:center; padding:44px 16px 0; }
+  .logo { display:flex; justify-content:center; flex-wrap:wrap; gap:6px; align-items:center; }
+  .tile { font:bold 52px/1 Baskerville,"Baskerville Old Face",Georgia,serif; background:#fff; width:62px; height:76px;
+          display:flex; align-items:center; justify-content:center; border-radius:10px; box-shadow:0 6px 0 rgba(0,0,0,.28); }
+  .tile.gap { background:none; box-shadow:none; width:18px; }
+  .stamp { margin-left:12px; width:84px; height:84px; border-radius:50%; background:var(--coral); color:#fff; transform:rotate(-12deg);
+           display:flex; align-items:center; justify-content:center; font:bold 22px Georgia,serif; border:4px double #fff; }
+  .tag { margin:18px 0 22px; font-size:17px; opacity:.9; }
+  .search { display:flex; max-width:560px; margin:0 auto; background:#fff; border-radius:50px; padding:6px; box-shadow:0 12px 30px rgba(0,0,0,.35); }
+  .search input { flex:1; border:0; font-size:19px; padding:10px 18px; border-radius:50px; background:none; color:var(--ink); min-width:0; }
+  .search input:focus { outline:none; }
+  .search:focus-within { box-shadow:0 0 0 4px var(--sun), 0 12px 30px rgba(0,0,0,.35); }
+  .search button { border:0; background:var(--coral); color:#fff; font:bold 17px "Trebuchet MS",sans-serif; padding:0 26px; border-radius:50px; cursor:pointer; }
+  .search button:hover { background:#e9552f; }
+  .chips { margin:18px 0 6px; }
+  .chips button { margin:4px; padding:7px 18px; font-size:15px; color:#fff; background:rgba(255,255,255,.14); border:1.5px solid rgba(255,255,255,.5);
+                  border-radius:30px; cursor:pointer; }
+  .chips button:hover { background:#fff; color:var(--ink); }
+  button:focus-visible { outline:3px solid var(--sun); outline-offset:2px; }
+  .wave { display:block; width:100%; height:60px; margin-top:-2px; }
+
+  /* ---------- results ---------- */
+  .main { max-width:1040px; margin:0 auto; padding:10px 16px 50px; }
+  .again { text-align:center; margin:4px 0 22px; }
+  .again button { background:var(--ink); color:#fff; border:0; padding:11px 22px; border-radius:8px; font:bold 15px "Trebuchet MS",sans-serif; cursor:pointer; }
+  .again button:hover { background:var(--sea); }
+  .again p { margin:8px 0 0; font-size:13px; color:#4d6b75; }
+  .cols { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+  .head h2 { margin:0; font-size:23px; }
+  .head p { margin:2px 0 12px; font-size:14px; }
+
+  /* old way: flat, grey, typewriter - the past */
+  .old .head h2 { font-family:"Courier New",monospace; color:var(--old); }
+  .old .head p { color:var(--old); }
+  .old .card { background:#f3f4f4; border:1px dashed #9aa3a8; border-radius:2px; font-family:"Courier New",monospace; }
+  .old .rank { color:var(--old); }
+  .old mark { background:#d9dcde; }
+  .old .count { color:var(--old); }
+
+  /* surfer way: rounded, colourful, alive */
+  .new .head h2 { color:var(--sea); }
+  .new .card { background:#fff; border-radius:16px; box-shadow:0 8px 22px rgba(8,72,90,.14); border-left:8px solid var(--sea); }
+  .new .rank { color:var(--coral); }
+  .new mark { background:var(--sun); }
+  .new .grow { animation:rise .5s ease-out both; }
+  @keyframes rise { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+
+  .card { padding:13px 15px 12px; margin-bottom:14px; }
+  .top { display:flex; gap:10px; align-items:baseline; }
+  .rank { font:bold 30px/1 Georgia,serif; }
+  .url { font-size:13px; color:var(--sea); word-break:break-all; }
+  .old .url { color:var(--old); }
+  .text { margin:9px 0 11px; font-size:14.5px; line-height:1.55; }
+  mark { border-radius:3px; padding:0 3px; color:inherit; }
+  .bar { height:9px; background:#dbeceb; border-radius:9px; overflow:hidden; margin-bottom:8px; }
+  .bar i { display:block; height:100%; border-radius:9px; background:linear-gradient(90deg,var(--sea),var(--coral)); }
+  .score { display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; font-size:13px; }
+  .score b { font-size:16px; }
+  .move { display:inline-block; font-size:12px; font-weight:bold; padding:2px 9px; border-radius:20px; margin-left:6px; }
+  .up { background:#d7f5e2; color:#0b6b35; } .down { background:#ffe1da; color:#a8321a; } .same { background:#e6ecee; color:#4d6b75; }
+
+  .empty { text-align:center; padding:50px 16px; font-size:19px; line-height:1.6; }
+  .empty .big { font-size:58px; display:block; }
+  .intro { text-align:center; color:#4d6b75; padding:34px 10px; font-size:16px; }
+
+  .summary { text-align:center; margin:0 0 18px; font-size:15px; }
+  .summary b { background:var(--sun); padding:1px 8px; border-radius:6px; }
+  details { max-width:760px; margin:0 auto 22px; background:#fff; border-radius:12px; padding:4px 18px; box-shadow:0 4px 14px rgba(8,72,90,.1); }
+  summary { cursor:pointer; font-weight:bold; padding:12px 0; }
+  details ol { margin:0 0 12px; padding-left:22px; line-height:1.7; font-size:14.5px; }
+  .map { margin-top:34px; background:#fff; border-radius:16px; padding:6px 20px 16px; box-shadow:0 8px 22px rgba(8,72,90,.12); }
+  .map h2 { font-size:21px; margin:16px 0 2px; } .map p { margin:0 0 10px; font-size:14px; color:#4d6b75; }
+  .row { display:grid; grid-template-columns:190px 1fr 120px; gap:10px; align-items:center; font-size:13px; padding:3px 0; }
+  .row .bar { margin:0; }
+  .row.hit .u { font-weight:bold; }
+  @media (max-width:720px) { .row { grid-template-columns:110px 1fr 70px; } }
+  @media (max-width:720px) { .cols { grid-template-columns:1fr; } .tile { width:42px; height:54px; font-size:36px; } .tile.gap { width:10px; } .stamp { width:62px; height:62px; font-size:16px; } }
+  @media (prefers-reduced-motion:reduce) { .new .grow { animation:none; } }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="logo" id="logo" aria-label="Mini Google 1998"></div>
+  <p class="tag">Two ways to rank the tiny web. One of them goes surfing.</p>
+  <div class="search">
+    <input id="box" type="text" placeholder="Search one word..." aria-label="Search word">
+    <button id="go">Search</button>
+  </div>
+  <div class="chips">
+    <button>pizza</button><button>cricket</button><button>movie</button><button>exam</button>
+  </div>
+  <svg class="wave" viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 30 C150 0 300 60 450 30 S750 0 900 30 S1100 55 1200 25 V60 H0Z" fill="#eaf7f5"/>
+  </svg>
+</header>
+
+<main class="main">
+  <div class="again">
+    <button id="again">Run the surfer again</button>
+    <p id="status"></p>
+  </div>
+  <details>
+    <summary>How does this work?</summary>
+    <ol>
+      <li><b>Old way:</b> count how many times your word appears on each page. Most words wins.</li>
+      <li><b>Surfer way:</b> a pretend surfer lands on a random page and makes 100,000 moves.</li>
+      <li>On each move, 15% of the time the surfer gets bored and jumps to any page. Otherwise they click a random link.</li>
+      <li>Pages the surfer visits often get a high score. Pages with many incoming links get visited a lot.</li>
+      <li>So a page can say a word only once and still win, if the web keeps sending the surfer there.</li>
+    </ol>
+  </details>
+  <div id="summary"></div>
+  <div id="results"></div>
+  <section class="map" id="map"></section>
+</main>
+
+<script>
+// ============================================================
+// 1. THE DATA  (replace this list with your class data)
+//    page = page number, links_to = page numbers separated by ";"
+// ============================================================
+var PAGES = [
+  { page: 1,  url: "www.slicehouse.com",    text: "Best pizza in town. Our pizza has thin crust and the pizza sauce is made daily.", links_to: "2;3" },
+  { page: 2,  url: "www.cheesefans.org",    text: "Why cheese matters: pizza, pasta and toast all need cheese.", links_to: "1" },
+  { page: 3,  url: "www.cricketnews.com",   text: "Cricket scores today. The cricket final was a thriller and cricket fans cheered.", links_to: "4;5" },
+  { page: 4,  url: "www.bigbash.net",       text: "Cricket highlights and match reports. Watch cricket online.", links_to: "3" },
+  { page: 5,  url: "www.moviemania.com",    text: "Movie reviews every week. Is this movie worth it? Our movie critic says yes.", links_to: "3;6" },
+  { page: 6,  url: "www.popcornpost.com",   text: "Popcorn tips for movie night. Pizza goes well with a movie too.", links_to: "5;1" },
+  { page: 7,  url: "www.examhelp.edu",      text: "Exam tips: sleep well before the exam. Revise early, then relax.", links_to: "8" },
+  { page: 8,  url: "www.studybuddy.edu",    text: "Study plans for every exam. Cricket breaks are allowed after an hour.", links_to: "7;3" },
+  { page: 9,  url: "www.myhomepage.com",    text: "Welcome to my homepage! Under construction. Sign my guestbook.", links_to: "1;3;5;7" },
+  { page: 10, url: "www.lonelypage.com",    text: "Nobody links here and this page has no links. Exam? Movie? Pizza? Maybe.", links_to: "" },
+  { page: 11, url: "www.pizzaplanet.net",   text: "Pizza toppings ranked. Pineapple pizza: yes or no? Vote now.", links_to: "1;2;6" },
+  { page: 12, url: "www.dominoeffect.com",  text: "Order pizza online. Pizza delivered hot in 30 minutes.", links_to: "1" },
+  { page: 13, url: "www.iplzone.com",       text: "Cricket league tables, player stats and cricket trivia.", links_to: "3;4" },
+  { page: 14, url: "www.gullycricket.in",   text: "Gully cricket rules: one hand one bounce. Cricket on the street is the best cricket.", links_to: "13" },
+  { page: 15, url: "www.filmfreak.com",     text: "Every movie ever made, sorted by mood. Movie night starts here.", links_to: "5;6;16" },
+  { page: 16, url: "www.oscarwatch.com",    text: "Movie awards news. Which movie wins this year?", links_to: "15;5" },
+  { page: 17, url: "www.lastminute.edu",    text: "Exam in one hour? Deep breath. Exam stress is normal, so drink water.", links_to: "7;8" },
+  { page: 18, url: "www.pastpapers.edu",    text: "Exam papers from past years. Practise the exam, not just the notes.", links_to: "7;17" },
+  { page: 19, url: "www.snackattack.com",   text: "Study snacks, movie snacks and pizza snacks. Snacks fix everything.", links_to: "6;11;7" },
+  { page: 20, url: "www.webring.org",       text: "The great web ring. Visit every page in our ring: cricket, movie, pizza and more.", links_to: "3;5;1;7;9" }
+];
+
+// ============================================================
+// 2. SETTINGS
+// ============================================================
+var MOVES = 100000;     // how many moves the surfer makes
+var BORED = 0.15;       // 15% chance of jumping to a random page
+
+// ============================================================
+// 3. PREPARE THE DATA
+// ============================================================
+var links = {};         // page number -> list of pages it links to
+var linksIn = {};       // page number -> how many pages link to it
+var numbers = [];       // all page numbers
+
+PAGES.forEach(function (p) { numbers.push(p.page); linksIn[p.page] = 0; });
+PAGES.forEach(function (p) {
+  var list = [];
+  p.links_to.split(";").forEach(function (s) {
+    var n = parseInt(s, 10);
+    if (linksIn[n] !== undefined && list.indexOf(n) === -1) list.push(n);  // real, unique pages only
+  });
+  links[p.page] = list;
+  list.forEach(function (n) { linksIn[n]++; });
+});
+
+// ============================================================
+// 4. THE RANDOM SURFER
+// ============================================================
+var surfer = {};        // page number -> surfer score (0 to 1)
+var runs = 0;
+var currentWord = "";   // the word being searched
+
+function randomPage() {
+  return numbers[Math.floor(Math.random() * numbers.length)];
+}
+
+function runSurfer() {
+  var visits = {};
+  numbers.forEach(function (n) { visits[n] = 0; });
+
+  var current = randomPage();                       // start on a random page
+  for (var i = 0; i < MOVES; i++) {
+    var out = links[current];
+    if (Math.random() < BORED || out.length === 0) {
+      current = randomPage();                       // bored (or dead end): jump anywhere
+    } else {
+      current = out[Math.floor(Math.random() * out.length)];   // click a random link
+    }
+    visits[current]++;                              // count the visit
+  }
+  numbers.forEach(function (n) { surfer[n] = visits[n] / MOVES; });
+
+  runs++;
+  document.getElementById("status").textContent =
+    "The surfer made " + MOVES.toLocaleString() + " moves (run " + runs + ").";
+}
+
+// draws a bar for every page, so you can see the whole surfer result
+function drawMap() {
+  var list = PAGES.slice().sort(function (a, b) { return surfer[b.page] - surfer[a.page]; });
+  var max = surfer[list[0].page];
+  var html = "<h2>The surfer's map of the whole web</h2><p>Every page, not just your search. Bold pages match your word.</p>";
+  list.forEach(function (p) {
+    var hit = currentWord && wholeWord(currentWord).test(p.text);
+    html += '<div class="row' + (hit ? " hit" : "") + '"><span class="u">' + escapeHtml(p.url) + '</span>' +
+      '<div class="bar"><i style="width:' + (surfer[p.page] / max * 100).toFixed(1) + '%"></i></div>' +
+      '<span>' + (surfer[p.page] * 100).toFixed(1) + '% &middot; in: ' + linksIn[p.page] + '</span></div>';
+  });
+  document.getElementById("map").innerHTML = html;
+}
+
+// ============================================================
+// 5. SEARCHING
+// ============================================================
+function escapeHtml(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function wholeWord(word) {
+  var safe = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp("\\b" + safe + "\\b", "gi");    // whole word, ignore capitals
+}
+
+function highlight(item) {
+  return escapeHtml(item.text).replace(wholeWord(item.word), function (m) {
+    return "<mark>" + m + "</mark>";
+  });
+}
+
+// one card in the Old way column
+function oldCard(item, rank) {
+  return '<div class="card"><div class="top"><span class="rank">' + rank + '</span><span class="url">' + escapeHtml(item.url) + '</span></div>' +
+    '<div class="text">' + highlight(item) + '</div>' +
+    '<div class="score"><span class="count">Word count: <b>' + item.count + '</b></span><span>Links in: ' + linksIn[item.page] + '</span></div></div>';
+}
+
+// one card in the Surfer way column (with a score bar and rank change)
+function newCard(item, rank, oldRank, maxScore, delay) {
+  var score = surfer[item.page];
+  var width = maxScore > 0 ? (score / maxScore) * 100 : 0;
+  var diff = oldRank - rank, move;
+  if (diff > 0) move = '<span class="move up">&#9650; up ' + diff + '</span>';
+  else if (diff < 0) move = '<span class="move down">&#9660; down ' + (-diff) + '</span>';
+  else move = '<span class="move same">same spot</span>';
+  return '<div class="card grow" style="animation-delay:' + delay + 'ms"><div class="top"><span class="rank">' + rank + '</span><span class="url">' + escapeHtml(item.url) + '</span>' + move + '</div>' +
+    '<div class="text">' + highlight(item) + '</div>' +
+    '<div class="bar"><i style="width:' + width.toFixed(1) + '%"></i></div>' +
+    '<div class="score"><span>Word count: ' + item.count + '</span><span>Surfer score: <b>' + (score * 100).toFixed(1) + '%</b> &nbsp; Links in: ' + linksIn[item.page] + '</span></div></div>';
+}
+
+function search(word) {
+  word = word.trim().toLowerCase();
+  currentWord = word;
+  var out = document.getElementById("results");
+  document.getElementById("summary").innerHTML = "";
+  drawMap();
+  if (word === "") { out.innerHTML = '<p class="intro">Pick an example or type a word. We will rank the same pages two different ways.</p>'; return; }
+
+  // find pages that contain the word, and count it
+  var found = [];
+  PAGES.forEach(function (p) {
+    var matches = p.text.match(wholeWord(word));
+    if (matches) found.push({ page: p.page, url: p.url, text: p.text, count: matches.length, word: word });
+  });
+
+  if (found.length === 0) {
+    out.innerHTML = '<div class="empty"><span class="big">&#128375;&#65039;</span>Our spiders searched every page for "' + escapeHtml(word) +
+      '" and came back with nothing but dust.<br>Even the surfer shrugged. Try another word!</div>';
+    return;
+  }
+
+  // Ranking 1: highest word count first
+  var oldWay = found.slice().sort(function (a, b) { return b.count - a.count; });
+  // Ranking 2: highest surfer score first
+  var surferWay = found.slice().sort(function (a, b) { return surfer[b.page] - surfer[a.page]; });
+
+  var oldRank = {};
+  oldWay.forEach(function (it, i) { oldRank[it.page] = i + 1; });
+  var maxScore = surfer[surferWay[0].page];
+
+  // who moved the most between the two rankings?
+  var best = surferWay[0], bestMove = 0;
+  surferWay.forEach(function (it, i) {
+    var m = Math.abs(oldRank[it.page] - (i + 1));
+    if (m > bestMove) { bestMove = m; best = it; }
+  });
+  var note = bestMove === 0 ? "Both rankings agree this time."
+    : "Biggest mover: <b>" + escapeHtml(best.url) + "</b> by " + bestMove + (bestMove === 1 ? " place." : " places.");
+  document.getElementById("summary").innerHTML = '<p class="summary">' + found.length + " pages match. " + note + "</p>";
+
+  var html = '<div class="cols"><section class="col old"><div class="head"><h2>Old way (1997)</h2><p>Counts the word. That is all.</p></div>';
+  oldWay.forEach(function (it, i) { html += oldCard(it, i + 1); });
+  html += '</section><section class="col new"><div class="head"><h2>Surfer way (1998)</h2><p>Ranks by where the surfer keeps ending up.</p></div>';
+  surferWay.forEach(function (it, i) { html += newCard(it, i + 1, oldRank[it.page], maxScore, i * 70); });
+  html += "</section></div>";
+  out.innerHTML = html;
+}
+
+// ============================================================
+// 6. BUTTONS AND START-UP
+// ============================================================
+var box = document.getElementById("box");
+
+document.getElementById("go").onclick = function () { search(box.value); };
+box.onkeydown = function (e) { if (e.key === "Enter") search(box.value); };
+
+document.querySelectorAll(".chips button").forEach(function (b) {
+  b.onclick = function () { box.value = b.textContent; search(b.textContent); };
+});
+
+document.getElementById("again").onclick = function () {
+  runSurfer();
+  search(box.value);                                // refresh the results
+};
+
+// the logo: one coloured tile per letter
+var colours = ["#4285f4", "#ea4335", "#f9a825", "#4285f4", "#34a853", "#ea4335"];
+var logoHtml = "", k = 0;
+"Mini Google".split("").forEach(function (ch) {
+  if (ch === " ") { logoHtml += '<span class="tile gap"></span>'; return; }
+  var tilt = (k % 2 === 0 ? -3 : 3);
+  logoHtml += '<span class="tile" style="color:' + colours[k % colours.length] + ';transform:rotate(' + tilt + 'deg)">' + ch + "</span>";
+  k++;
+});
+document.getElementById("logo").innerHTML = logoHtml + '<span class="stamp">1998</span>';
+
+runSurfer();                                        // run once when the page opens
+search("");                                         // show the welcome line
+</script>
+</body>
+</html>
